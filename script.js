@@ -22,6 +22,10 @@ var linhas_controle = [];//Array que guarda as linhas que ligam os pontos de con
 var pontos_controle = [];//Array que guarda os pontos de controle que são criados
 var qtd_pontos_controle=0;
 
+var apertando = false;	//boolean que diz se o mouse esta apertando num ponto de controle
+var moveu = false;	//boolean que diz se o mouse se moveu quando apertou o botão esquerdo
+var indice;		//inteiro que diz o indice do ponto de controle que se está clicando
+
 //Função que cria os pontos de controle e os guarda no array
 function criarPontoControle(mouseX, mouseY){
 	circulo.beginPath();
@@ -103,13 +107,78 @@ function desenharControle(){
 
 }
 
+//Função que move o ponto, e linha, de acordo com o mouse
+function moverPontoControle(mouseX, mouseY){	
+
+	pontos_controle[indice][1] = mouseX;
+	pontos_controle[indice][2] = mouseY;
+
+	if(indice == pontos_controle.length-1){
+		linhas_controle[indice-1][2][0] = mouseX;
+		linhas_controle[indice-1][2][1] = mouseY;
+	}else if(indice == 0){
+		linhas_controle[indice][1][0] = mouseX;
+		linhas_controle[indice][1][1] = mouseY;
+	}else{
+		linhas_controle[indice-1][2][0] = mouseX;
+		linhas_controle[indice-1][2][1] = mouseY;
+		linhas_controle[indice][1][0] = mouseX;
+		linhas_controle[indice][1][1] = mouseY;
+	}
+				
+	desenharControle();
+}
+
+//Função que verifica se o mouse está clicando em um ponto de controle
+function estaNumPonto(mouseX, mouseY){
+	var i;
+	
+	for(i=pontos_controle.length-1; i>=0; i--){
+		if(mouseX<(pontos_controle[i][1]+5) && mouseX>(pontos_controle[i][1]-5)){
+			if(mouseY<(pontos_controle[i][2]+5) && mouseY>(pontos_controle[i][2]-5)){
+				indice = i;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 //Evento de click no canvas para a criação de um ponto de controle
 canvas.addEventListener('click', function(e){
-	criarPontoControle(e.offsetX, e.offsetY);
+	if(!moveu){
+		criarPontoControle(e.offsetX, e.offsetY);
+	}else{
+		moveu = false;
+	}
 });
 
 //Evento de click com o botão direito do mouse no canvas para excluir um ponto de controle
 canvas.addEventListener('contextmenu', function(e){
+
 	circulo.clearRect(0,0,canvas.width, canvas.height);
 	excluirPontoControle(e.offsetX, e.offsetY);
+});
+
+//Evento de apertar o botão esquerdo do mouse, verifica se está apertando em um ponto de controle
+canvas.addEventListener('mousedown', function(e){
+
+	if(estaNumPonto(e.offsetX, e.offsetY)){
+		apertando = true;
+	}
+});
+
+//Evento de mover o mouse, verifica se o mouse esta sendo clicado, se sim move o ponto de controle
+canvas.addEventListener('mousemove', function(e){
+
+	if(apertando){
+		circulo.clearRect(0,0,canvas.width, canvas.height);
+		moverPontoControle(e.offsetX, e.offsetY);
+		moveu = true;
+	}
+});
+
+//Evento de soltar o botão esqerdo do mouse
+canvas.addEventListener('mouseup', function(e){
+	apertando = false;
 });
