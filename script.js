@@ -41,14 +41,14 @@ function criarPontoControle(mouseX, mouseY){
 					pontos_controle[qtd_pontos_controle-1]);
 		//linha_bezier.length = 0;
 		//ponto_bezier.length = 0;
-		//criarCurvaBezier(100);
+		curvaBezier(5);
 	}
 }
 
 //Função que cria as linhas para os pontos de controle
 function criarLinhaControle(circulo1,circulo2){
 	linhas_controle.push([linha,[circulo1[1],circulo1[2]],[circulo2[1],circulo2[2]]]);
-	pontoPoligonal(linhas_controle[linhas_controle.length-1][1],linhas_controle[linhas_controle.length-1][2],0.5, 1,linhas_controle.length);
+	//pontoPoligonal(linhas_controle[linhas_controle.length-1][1],linhas_controle[linhas_controle.length-1][2],0.5, 1,linhas_controle.length);
 }
 
 //Função que exclui uma linha que está ligada a um ponto de controle
@@ -171,6 +171,7 @@ function linhaPoligonal(a,b,t,nivel){
 	}
 	
 	pontoPoligonal(linha_poligonal[linha_poligonal.length-1][1],linha_poligonal[linha_poligonal.length-1][2],t,nivel+1,contador);
+	
 }
 
 function pontoPoligonal(a,b,t,nivel,contador){
@@ -200,9 +201,19 @@ function pontoPoligonal(a,b,t,nivel,contador){
 		}
 	}
 	
-	if(ponto_poligonal[ponto_poligonal.length-1][5]>1){
+	if(ponto_poligonal[ponto_poligonal.length-1][5]>1 && nivel< linhas_controle.length){
 		linhaPoligonal([ponto1[1],ponto1[2]],
 						[ponto2[1],ponto2[2]],t,nivel);
+	}
+}
+
+function curvaBezier(t){
+	var i;
+	var j;
+	for(i =1;i<t;i++){
+		for(j=0;j<linhas_controle.length;j++){
+			pontoPoligonal(linhas_controle[j][1],linhas_controle[j][2],(i/t), 1,j+1);
+		}
 	}
 }
 
