@@ -26,29 +26,25 @@ var apertando = false;	//boolean que diz se o mouse esta apertando num ponto de 
 var moveu = false;	//boolean que diz se o mouse se moveu quando apertou o botão esquerdo
 var indice;		//inteiro que diz o indice do ponto de controle que se está clicando
 
+var linha_bezier = [];
+var ponto_bezier = [];
+
 //Função que cria os pontos de controle e os guarda no array
 function criarPontoControle(mouseX, mouseY){
-	circulo.beginPath();
-	circulo.arc(mouseX, mouseY, 5, 0, 2 * Math.PI);
-	circulo.fillStyle = "#ff0000";
-	circulo.fill();
-	circulo.stroke();
 	pontos_controle.push([circulo,mouseX,mouseY]);
 	qtd_pontos_controle++;
 	if(pontos_controle.length>1){
 		criarLinhaControle(pontos_controle[qtd_pontos_controle-2],
 					pontos_controle[qtd_pontos_controle-1]);
+		linha_bezier.length = 0;
+		ponto_bezier.length = 0;
+		criarCurvaBezier(100);
 	}
 }
 
 //Função que cria as linhas para os pontos de controle
 function criarLinhaControle(circulo1,circulo2){
-	linha.beginPath();
-	linha.moveTo(circulo1[1],circulo1[2]);
-	linha.lineTo(circulo2[1],circulo2[2]);
-	linha.strokeStyle = "#ff0000";
 	linhas_controle.push([linha,[circulo1[1],circulo1[2]],[circulo2[1],circulo2[2]]]);
-	linha.stroke();
 }
 
 //Função que exclui uma linha que está ligada a um ponto de controle
@@ -104,6 +100,16 @@ function desenharControle(){
 		linha.strokeStyle = "#ff0000";
 		linha.stroke();
 	}
+	
+	//parte para desenhar a curva de bezier
+	var k;
+	for(k=0; k<linha_bezier.length; k++){
+		linha.beginPath();
+		linha.moveTo(linha_bezier[k][1][0],linha_bezier[k][1][1]);
+		linha.lineTo(linha_bezier[k][2][0],linha_bezier[k][2][1]);
+		linha.strokeStyle = "#ffff00";
+		linha.stroke();
+	}
 
 }
 
@@ -144,10 +150,43 @@ function estaNumPonto(mouseX, mouseY){
 	return false;
 }
 
+function linhaCurvaBezier(inicio,fim){
+	linha_bezier.push([linha,[inicio[0],inicio[1]],[fim[0],fim[1]]]);
+}
+
+function pontoCurvaBezier(x,y){
+	ponto_bezier.push([x, y]);
+	if(ponto_bezier.length>1){
+		linhaCurvaBezier([ponto_bezier[ponto_bezier.length-2][0],ponto_bezier[ponto_bezier.length-2][1]],[x,y]);
+	}
+}
+
+function pontoBezier(r,i,t){
+	var coord = [];
+	if(r==0){
+		coord = [pontos_controle[i][1],pontos_controle[i][2]];
+	}else{
+		var a = pontoBezier(r-1,i,t);
+		var b = pontoBezier(r-1,i+1,t);
+		coord = [((a[0]*(1-t))+(b[0]*t)),((a[1]*(1-t))+(b[1]*t))];
+	}
+	return coord;
+}
+
+function criarCurvaBezier(numero){
+	var t;
+	for(t=0; t<=numero;t++){
+		var coordenadas = pontoBezier(pontos_controle.length-1,0,(t/numero))
+		pontoCurvaBezier(coordenadas[0],coordenadas[1]);
+	}
+}
+
 //Evento de click no canvas para a criação de um ponto de controle
 canvas.addEventListener('click', function(e){
 	if(!moveu){
+		circulo.clearRect(0,0,canvas.width, canvas.height);
 		criarPontoControle(e.offsetX, e.offsetY);
+		desenharControle();
 	}else{
 		moveu = false;
 	}
