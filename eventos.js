@@ -1,32 +1,52 @@
+function inserirCurva(){
+	curvasControle.push(CriarCurva());
+	
+	let opcao= document.createElement("option");
+	opcao.text="Curva "+curvasControle.length+"";
+	
+	selectCampo.appendChild(opcao);
+	
+	selectCampo.selectedIndex = curvasControle.length-1;
+	curvaSelecionada = selectCampo.selectedIndex;
+	interacoes.value = 100;
+	checkCurva.checked = true;
+	checkPontos.checked = true;
+	checkPoligonais.checked = true;
+}
+
+function mudarCurva(){
+	curvaSelecionada = selectCampo.selectedIndex;
+	checkCurva.checked = curvasControle[curvaSelecionada].desenharCurva;
+	checkPontos.checked = curvasControle[curvaSelecionada].desenharPontos;
+	checkPoligonais.checked = curvasControle[curvaSelecionada].desenharPoligonais;
+	interacoes.value = curvasControle[curvaSelecionada].interacoes;
+	Redesenhar();
+}
  
 function modificarInteracoes(){
-	interacoes = document.getElementById('interacoes').value;
+	curvasControle[curvaSelecionada].interacoes = interacoes.value;
 	Redesenhar();
 }
 
 function modificarVisualizacaoCurva(){
-	desenhar_curva = !desenhar_curva;
+	curvasControle[curvaSelecionada].desenharCurva = checkCurva.checked;
 	Redesenhar();
 }
 
 function modificarVisualizacaoPoligonal(){
-	desenhar_poligonal = !desenhar_poligonal; 
+	curvasControle[curvaSelecionada].desenharPoligonais = checkPoligonais.checked;
 	Redesenhar();
 }
 
 function modificarVisualizacaoPontos(){
-	desenhar_pontos = !desenhar_pontos;
+	curvasControle[curvaSelecionada].desenharPontos = checkPontos.checked;
 	Redesenhar();
 }
-
- 
  
 //Evento de click no canvas para a criação de um ponto de controle
 canvas.addEventListener('click', function(e){
 	if(!moveu){
-		//circulo.clearRect(0,0,canvas.width, canvas.height);
 		criarPontoControle(e.offsetX, e.offsetY);
-		//desenharControle();
 		Redesenhar();
 	}else{
 		moveu = false;

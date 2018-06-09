@@ -5,22 +5,19 @@
 	</head>
 
 	<body class="title">
-	<h1 align = "center"> Curvas de Bézier interativas </h1>	
+	<h1 align = "center"> Curvas de Bezier interativas </h1>	
 		
 	<nav>
 
-		<select>
-			<option value="curva1">Curva 1</option>
-			
-		</select>
-		<button type="button">Adicionar</button>
-		Iterações:
+		<select id="selectCampo" onchange="mudarCurva();"></select>
+		<button type="button" onClick="inserirCurva();">Adicionar</button>
+		Iteracoes:
 		<input id="interacoes" type="number" value="100" />
 		<button type="button" onclick="modificarInteracoes();">OK</button>
 
-		<input type="checkbox" onchange="modificarVisualizacaoCurva();" checked />Curva
-		<input type="checkbox" onchange="modificarVisualizacaoPontos();" checked />Pontos de controle
-		<input type="checkbox" onchange="modificarVisualizacaoPoligonal(); " checked />Polígonal de controle 
+		<input type="checkbox" id="checkCurva" onchange="modificarVisualizacaoCurva();" checked />Curva
+		<input type="checkbox" id="checkPontos" onchange="modificarVisualizacaoPontos();" checked />Pontos de controle
+		<input type="checkbox" id="checkPoligonais" onchange="modificarVisualizacaoPoligonal(); " checked />Poligonal de controle 
 	</nav>
 	</body>
 
@@ -32,6 +29,5 @@
 	<script type="text/javascript" src="script.js"></script>
 	<script type="text/javascript" src="eventos.js"></script>
 	<script type="text/javascript" src="CurvaBezier.js"></script>
-	<script type="text/javascript" src="pontosControle.js"></script>
 	
 </html>
